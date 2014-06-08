@@ -164,7 +164,7 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 	return [dbFrame, loopFrame]
 
 #THIS FUNCTION IS CALLED WHEN READFILE IS READING A SEQUENCE WITH THE 'SPEC' OPTION. IT USES THE ANIMS STARTING WITH NUMBERS TO CALCULATE THE 2D GRADIENTS AND THE RATE AT WHICH THE COLOR PALETTE CHANGES. THEN IT MAKES TEMPORARY DIRECTORIES FOR IMAGES CONTAINED IN SPECTRUMS, AND THESE DIRECTORIES ARE ASSIGNED TO EACH ANIM LINES 'LILIMGDIR' SLOT ACCORDINGLY. THIS FUNCTION ALSO HELPS BUILD SPECMAP
-def modifySpecAnims(anims, colorMap, lilImgDBDir = 'emoji/'):
+def modifySpecAnims(anims, colorMap, whiteSquare, lilImgDBDir = 'emoji/'):
 	littleImgs = remoji.getLittleImgs(lilImgDBDir)
 	newAnims = []
 	i = 0
@@ -172,8 +172,8 @@ def modifySpecAnims(anims, colorMap, lilImgDBDir = 'emoji/'):
 	curSpec = None
 	specDirOrder = [] #DIRECTORY NAMES IN ORDER CORRESPONDING 1:1 TO FRAMES IN THE ANIMATION
 	#if 'spec' not os.path.isdir('../spec'):
-	if not os.path.isdir('../spec'):
-		movieMaker.wipeDir('spec/')
+#	if not os.path.isdir('../spec'):
+#		movieMaker.wipeDir('spec/')
 	while i < len(anims):
 #		if type(anims[i][0]) == int:
 		if curSpec == None:
@@ -189,7 +189,7 @@ def modifySpecAnims(anims, colorMap, lilImgDBDir = 'emoji/'):
 				tempPivotColor.append(g)
 				tempPivotColor.append(b)
 				pivotColors.append(tempPivotColor)
-			curSpec = spectrum.Spectrum(steps, pivotColors, lilImgDBDir, littleImgs, colorMap)
+			curSpec = spectrum.Spectrum(steps, pivotColors, lilImgDBDir, littleImgs, colorMap, whiteSquare)
 		#print curSpec.levelsPerColor, curSpec.pivotColors
 		j = i + 1
 			#JUMP TO NEXT SPECTRUM
@@ -209,7 +209,7 @@ def modifySpecAnims(anims, colorMap, lilImgDBDir = 'emoji/'):
 			tempPivotColor.append(b)
 			pivotColors.append(tempPivotColor)
 		#print 'pivotColors: ', pivotColors
-		nextSpec = spectrum.Spectrum(steps, pivotColors, lilImgDBDir, littleImgs, colorMap)
+		nextSpec = spectrum.Spectrum(steps, pivotColors, lilImgDBDir, littleImgs, colorMap, whiteSquare)
 		#print type(nextSpec), type(curSpec)
 		spec2d = spectrum.make2dSpectrum(20, curSpec, nextSpec, lilImgDBDir, littleImgs, colorMap)
 		transitionFrames = 0
@@ -233,11 +233,13 @@ def modifySpecAnims(anims, colorMap, lilImgDBDir = 'emoji/'):
 			dirName = spec.namify()
 			specDirShortOrder.append(dirName)
 			#IF THERES A PATH TO SPEC/DIRNAME, DONT BOTHER, ELSE, MAKE IT
-			specDirs = os.listdir('spec/')
-			if dirName[:-1] not in specDirs:
-				os.system('mkdir spec/' + dirName[:-1])
-				#print 'copyingImgsToDir ..'
-				spec.copyImgsToDir('spec/' + dirName)
+			#specDirs = os.listdir('spec/')
+			#if dirName[:-1] not in specDirs:
+			#	os.system('mkdir spec/' + dirName[:-1])
+			#	#print 'copyingImgsToDir ..'
+			#	spec.copyImgsToDir('spec/' + dirName)
+			movieMaker.wipeDir('spec/' + dirName)
+			spec.copyImgsToDir('spec/' + dirName)
 			specDirOrder.append('spec/' + dirName)
 		#print specDirs
 		#print dirName
@@ -281,6 +283,10 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 			if seqType == 'spec':
 				lilImgDir = ''
 				baseDir = lineWords[3]
+				whiteSquare = False
+				if baseDir[-1] == 'w':
+					baseDir = baseDir[:-1]
+					whiteSquare = True
 				anims = []
 				j = curLine + 1
 				while getWords(lines[j])[0] != 'endSeq':
@@ -324,7 +330,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 					
 					curSeqLine += 1
 				print 'anims:', anims
-				(anims, specDirOrder) = modifySpecAnims(anims, colorMap)
+				(anims, specDirOrder) = modifySpecAnims(anims, colorMap, whiteSquare)
 				#print 'anims:',anims
 				#print 'len(anims):',len(anims)
 				#print 'specDirOrder:',specDirOrder

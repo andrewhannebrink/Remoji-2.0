@@ -12,30 +12,30 @@ import time
 import preProc
 
 #THIS FUNCITON RETURNS THE AVERAGE INTENSITY OF THE SUPPLIED COLOR STRING WITHIN THE IMAGE 
-def getAvgColor(imageFile, colorStr):
+def getAvgColor(imageFile, colorStr, skip = 5):
 	imgPixels = imageFile.load()
 	xi, yi = imageFile.size
 	intensityList = []
 	if colorStr is 'r':
-		for x in range(0, xi):
-			for y in range(0, yi):
+		for x in range(0, xi / skip):
+			for y in range(0, yi / skip):
 				if len(imgPixels[x,y]) == 2:
 					break
-				(r,g,b) = imgPixels[x, y]
+				(r,g,b) = imgPixels[x*skip, y*skip]
 				intensityList.append(r)
 	if colorStr is 'g':
-		for x in range(0, xi):
-			for y in range(0, yi):
-				if len(imgPixels[x,y]) == 2:
+		for x in range(0, xi / skip):
+			for y in range(0, yi / skip):
+				if len(imgPixels[x*skip,y*skip]) == 2:
 					break
-				(r,g,b) = imgPixels[x, y]
+				(r,g,b) = imgPixels[x*skip, y*skip]
 				intensityList.append(g)
 	if colorStr is 'b':
-		for x in range(0, xi):
-			for y in range(0, yi):
-				if len(imgPixels[x,y]) == 2:
+		for x in range(0, xi / skip):
+			for y in range(0, yi / skip):
+				if len(imgPixels[x*skip,y*skip]) == 2:
 					break
-				(r,g,b) = imgPixels[x, y]
+				(r,g,b) = imgPixels[x*skip, y*skip]
 				intensityList.append(b)
 	avg = sum(intensityList) / sum( [1 for n in intensityList] )
 	return avg
@@ -220,13 +220,14 @@ def getAllBlurAnims(littleImgs, scale):
 
 #CONVERTS GIFFRAMES TO IMAGE FILES OF THE NAME <NAMESTR>0.PNG, <NAMESTR>1.PNG IN THE RELATIVE 'FRAMES/' DIRECTORY. IF AUTO IS TRUE, THIS FUNCTION AUTOMATICALLY FLOPS THE IMAGE TO FIT THE 16:9 ASPECT RATIO
 def convertGif(inputGifName, framesDB, auto = False):
-	totFrames = movieMaker.getTotFrames(inputGifName)
+	longInputGifName = 'gifs/' + inputGifName
+	totFrames = movieMaker.getTotFrames(longInputGifName)
 	if auto is False:
 		for i in range(0, totFrames):
-			os.system('convert ' + inputGifName + '.gif[' + str(i) + '] ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + '.png')
+			os.system('convert ' + longInputGifName + '.gif[' + str(i) + '] ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + '.png')
 	else:
 		for i in range(0, totFrames):
-			os.system('convert ' + inputGifName + '.gif[' + str(i) + '] ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'l.png')
+			os.system('convert ' + longInputGifName + '.gif[' + str(i) + '] ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'l.png')
 			os.system('convert -flop ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'l.png ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'r.png')
 			os.system('convert +append ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'l.png ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'r.png ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + '.png')
 			os.system('rm ' + framesDB + inputGifName + movieMaker.getFrameStr(i,3) + 'l.png')
