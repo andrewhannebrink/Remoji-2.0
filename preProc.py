@@ -260,7 +260,6 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 	gifMap = {}
 	seqOrder = []
 	dbFrame = 1
-	loopFrame = 0
 	f = open(instructionsFile)
 	frame = 1
 	lines = f.readlines()
@@ -283,6 +282,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 			if seqType == 'spec':
 				lilImgDir = ''
 				baseDir = lineWords[3]
+				loopFrame = int(lineWords[4])
 				whiteSquare = False
 				if baseDir[-1] == 'w':
 					baseDir = baseDir[:-1]
@@ -341,6 +341,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 			#MOSAIC MODE LINE PARSING
 			if seqType == 'mos':
 				#ANIMS DESCRIBE SEGMENTS OF THE SEQUENCE
+				loopFrame = int(lineWords[3])
 				anims = []
 				j = curLine + 1
 				while getWords(lines[j])[0] != 'endSeq':

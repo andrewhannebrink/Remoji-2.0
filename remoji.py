@@ -286,7 +286,8 @@ def main(argv = None):
 		preProcBool = False
 		loadBool = False
 		mapBool = False
-		opts, args = getopt.getopt(sys.argv[1:], 'hcsiapml')
+		joinBool = False
+		opts, args = getopt.getopt(sys.argv[1:], 'hcsiapmlj')
 		for opt, arg in opts:
 			if opt == '-h':
 				usage()
@@ -311,6 +312,9 @@ def main(argv = None):
 			if opt == '-l':
 				loadBool = True
 				print 'Making directory of frames by preprocessing instructions file (colorMap file provided)...'
+			if opt == '-j':
+				joinBool = True
+				print 'Concatenating movie directories...'
 
 #ARGS FOR INITIATING ANIMATION FRAMES
 		if changeColorBool is True:
@@ -409,6 +413,12 @@ def main(argv = None):
 			else:
 				preProc.readFile(instructionsFile, movDir, outputName)
 			print time.time() - startTime, 'seconds'
+
+		if joinBool is True:
+			movDirs = args[:-1]
+			opMovDir = args[-1]
+			print movDirs, opMovDir
+			movieMaker.joinMovDirs(movDirs, opMovDir)
 			
 
 	except getopt.error as err:

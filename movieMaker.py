@@ -32,6 +32,19 @@ def getFrameStr(frame, digits):
 			frameStr = str(frame)
 	return frameStr
 
+# CONCATENATES ALL THE FRAME SEQUENCES IN ORDER FROM THE DIRECTORIES IN MOVDIRLIST, AND SAVES THE NEW FRAME SEQUENCE TO OPMOVDIR
+def joinMovDirs(movDirList, opMovDir):
+	wipeDir(opMovDir)	
+	i = 1
+	for movDir in movDirList:
+		frames = os.listdir(movDir)
+		frames.sort()
+		for frame in frames:
+			newName = 'anim' + getFrameStr(i, 4) + '.png'
+			os.system('cp ' + movDir + frame + ' ' + opMovDir + newName)
+			i += 1
+		
+
 #THIS CLASS KEEPS TRACK OF FRAME INFORMATION AFTER TRANSITIONING ANIMATIONS
 class TransInfo:
 	def __init__(self, dbDir, res, loopFrame, frame):
