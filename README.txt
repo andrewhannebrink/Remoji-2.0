@@ -88,3 +88,9 @@ To pass a pickled dict of a pre-calculated colorMap, use the -l (load map) optio
 	-m	SYNTAX: <little image directory> <output file name> 
 	 
 This option creates a Python dict structured like the colorMap variable discussed above, and saves it in a pickled file to be used with the -l (load map) option. The map it creates contains { ( ( (r, g, b), <little image directory>) : image path } for every possible 64-bit RGB-value.
+
+	-j	SYNTAX: <movie directory 1> <movie directory 2> ... <movie directory n> <output movie directory>
+
+	The -j (join) option concatenates all the frames in order from the directories passed as arguments up until the last argument. The new, concatenated directory is saved at the directory pass as the last argument (output movie directory). This option allows the user to render just chunks of an animation at a time, then add the new changes to an existing video.
+
+
