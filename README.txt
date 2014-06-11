@@ -93,4 +93,9 @@ This option creates a Python dict structured like the colorMap variable discusse
 
 	The -j (join) option concatenates all the frames in order from the directories passed as arguments up until the last argument. The new, concatenated directory is saved at the directory pass as the last argument (output movie directory). This option allows the user to render just chunks of an animation at a time, then add the new changes to an existing video.
 
-
+TODO:
+	Music Syncing
+	Reverse Sequence constructor:
+		Sequence seq1 (rev) << seq2
+	Gradient color selection based on brightness level rather than closest image within a directory
+	
