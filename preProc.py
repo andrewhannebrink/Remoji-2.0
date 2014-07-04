@@ -330,7 +330,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 					
 					curSeqLine += 1
 				print 'anims:', anims
-				(anims, specDirOrder) = modifySpecAnims(anims, colorMap, whiteSquare)
+				(anims, specDirOrder) = modifySpecAnims(anims, colorMap, whiteSquare, baseDir)
 				#print 'anims:',anims
 				#print 'len(anims):',len(anims)
 				#print 'specDirOrder:',specDirOrder
@@ -420,7 +420,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 #				print  ['unique/' + inputFrameNames[loopFrame], 'autoScale', depthPix, littleImgs, frameMap[key], 'arbitraryDir/']
 				#print 'lilImgMap:,',lilImgMap
 				#remoji.makeMosaic(gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir, 'arbitraryDir/')
-				pool.apply_async(remoji.makeMosaic, [gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir, 'arbitraryDir/'])
+				pool.apply_async(remoji.makeMosaic, [gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir])
 			pool.close()
 			pool.join()
 

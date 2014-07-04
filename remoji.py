@@ -146,27 +146,27 @@ def getNewTiles(origTiles, littleImgs, colorMap, lilImgDir):
 	return newTiles
 		
 #THIS FUNCTION CONSTRUCTS AND RETURNS THE FINAL MOSAIC IMAGE
-def getFinalImg(xt, yt, xBuf, yBuf, newTiles):
+def getFinalImg(xt, yt, xBuf, yBuf, newTiles, directory):
 	finalImg = Image.new('RGB', (int(xt), int(yt)), (0,0,0))
 	tileWidth = int(xt / len(newTiles[0]))
 	tileHeight = int(yt / len(newTiles))
 	#print 'newTiles:', newTiles
 	for y in range(0, len(newTiles)):
 		for x in range(0, len(newTiles[0])):
-			newImg = Image.open('emoji/' + newTiles[y][x]).convert('RGB')
+			newImg = Image.open(directory + newTiles[y][x]).convert('RGB')
 			newImg = newImg.resize((tileWidth, tileHeight), Image.ANTIALIAS)
 			finalImg.paste(newImg, (x*tileWidth + xBuf, y*tileHeight + yBuf))	
 	return finalImg	
 
 #GIVEN THE ORIGINAL IMAGE, SCALE, AND DEPTH (PIXEL WIDTH OF SINGLE MOSAIC TILE), THIS FUNCTION BUILDS AND SAVES THE FINAL IMAGE FROM START TO FINISH
-def makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, lilImgDir, direc = 'emoji/'):
+def makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, lilImgDir):
 	print 'started: ' + outputName
-	if direc is 'emoji/':
-		targetImg = Image.open('emoji/' + targetImgName).convert('RGB')
-	else:
-		targetImg = Image.open(targetImgName).convert('RGB')
+#	if direc is 'emoji/':
+#		targetImg = Image.open('emoji/' + targetImgName).convert('RGB')
+#	else:
+	targetImg = Image.open(targetImgName).convert('RGB')
 	if scale == 'autoScale':
-		[xt, yt] = [1280, 720]
+		[xt, yt] = [1920, 1080]
 	else:
 		[xt, yt] = [ l * scale for l in targetImg.size ] 
 	[xi, yi] = targetImg.size
@@ -183,7 +183,7 @@ def makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, li
 	yBuf = extraYPix / 2
 	#INFLATE TARGET IMG TO FINAL SIZE
 	if scale == 'autoScale':
-		bigTargetImg = targetImg.resize((1280,720), Image.ANTIALIAS)
+		bigTargetImg = targetImg.resize((1920,1080), Image.ANTIALIAS)
 	else:
 		bigTargetImg = targetImg.resize(((int(xi*scale)), int(yi*scale)), Image.ANTIALIAS)
 	#BREAK TARGET IMG INTO SMALLER PIECES THAT WILL BE REPLACED BY ONE EMOJI AND PUT THEM INTO A LIST OF LISTS CORRESPONDING TO TILE POSITION
@@ -195,7 +195,7 @@ def makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, li
 			origTiles[y].append(ImageInfo('tempTile', tempImg))
 	newTiles = getNewTiles(origTiles, littleImgs, colorMap, lilImgDir)
 	#MAKE NEW FRAME AND FILL IT OUT WITH TILES FORM NEWTILES. THIS FUNCTION RETURNS THE FINAL IMAGE
-	finalImg = getFinalImg(xt, yt, xBuf, yBuf, newTiles)
+	finalImg = getFinalImg(xt, yt, xBuf, yBuf, newTiles, lilImgDir)
 	finalImg.save(outputName)
 	print 'finished: ' + outputName
 	return
@@ -332,7 +332,7 @@ def main(argv = None):
 
 			littleImgs = getLittleImgs(littleImgDir)
 
-			makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, littleImgDir, outputName )
+			makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, littleImgDir)
 			print outputName + ' saved'
 
 		if initiateFramesBool is True:

@@ -98,7 +98,7 @@ def makeAnim(dbDir, outputName, movDir, framePerRes, loopFrame, framePerAnim, fr
 	transInfo = TransInfo(dbDir, res, loopFrame, frame)
 	return transInfo
 
-#BASIC BOX TRANSITION, NOTE THAT THE FINAL AMOUNT OF FRAMES IN THE TRANSITION WILL BE FRAMEPERTRANS + (FRAMEPERRES(DBDIR2) % FRAMEPERTRANS). ALSO NOTE THAT THIS FUNCTION RELIES ON THERE BEING A 1280 X 720 ANIMATION DIMENSION.
+#BASIC BOX TRANSITION, NOTE THAT THE FINAL AMOUNT OF FRAMES IN THE TRANSITION WILL BE FRAMEPERTRANS + (FRAMEPERRES(DBDIR2) % FRAMEPERTRANS). ALSO NOTE THAT THIS FUNCTION RELIES ON THERE BEING A 1920 X 1080 ANIMATION DIMENSION.
 def boxTrans(dbDir1, dbDir2, outputName, movDir, framePerTrans, loopFrame, frame, speed, startRes1, startRes2, endRes1 = None, endRes2 = None):
 	origFrames1 = os.listdir(dbDir1)
 	origFrames2 = os.listdir(dbDir2)
@@ -106,13 +106,13 @@ def boxTrans(dbDir1, dbDir2, outputName, movDir, framePerTrans, loopFrame, frame
 	origFrames2.sort()
 	framePerRes1 = len(origFrames1) / 20
 	framePerRes2 = len(origFrames2) / 20
-	approxXStepPix = 1280 / float(framePerTrans)
-	approxYStepPix = 720 / float(framePerTrans)
+	approxXStepPix = 1920 / float(framePerTrans)
+	approxYStepPix = 1080 / float(framePerTrans)
 	j = loopFrame   #HELPS KEEP TRACK OF FRAMES TO FINISH LOOP AT THE END
 	for i in range(0, framePerTrans):
 		[bx, by] = [round(approxXStepPix * i), round(approxYStepPix * i)]
-		xBuf = int((1280 - bx) / 2)
-		yBuf = int((720 - by) / 2)
+		xBuf = int((1920 - bx) / 2)
+		yBuf = int((1080 - by) / 2)
 		newImg = Image.open(dbDir1 + origFrames1[(startRes1 * framePerRes1) + (j % framePerRes1)])
 		img2 = Image.open(dbDir2 + origFrames2[(startRes2 * framePerRes2) + (j % framePerRes2)])
 		box = img2.crop((xBuf, yBuf, 1279 - xBuf, 719 - yBuf))
