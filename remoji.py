@@ -121,6 +121,9 @@ def getClosestImg(origTile, littleImgs, colorMap, lilImgDir, oneColor = False):
 					closestImg = littleImg.name
 			#print 'adding object to colormap'
 			colorMap[(ogAvgRGB, lilImgDir)] = closestImg
+		for c in ogAvgRGB:
+			if c > 255:
+				print 'Error: color value ', c, 'out of range. This will cause closestImg to be None. Check to make sure all values in the the instructions file are under 255.'
 		return closestImg
 	# IF COLORMAP == NONE, DONT KEEP A COLOR MAP DURING PIXEL ITERATION
 	else:
@@ -240,6 +243,16 @@ def convertGif(inputGifName, framesDB, auto = False):
 			croppedImg.save(framesDB + inputGifName + movieMaker.getFrameStr(i,3) + '.png')
 	return totFrames	
 
+#JUST LIKE CONVERT GIFS, BUT FOR MP4'S INSTEAD
+#ffmpeg -ss 00:00:00 -t 00:00:05.00 -i "GOPR0621.MP4" -r 30.0 "stripes%4d.png"
+def convertMp4(inputMp4Name, framesDB, auto = False):
+	longInputMp4Name = 'mp4s/' + inputMp4Name
+	#totFrames = movieMaker.getTotMp4Frames(longInputMp4Name) #TODO: write getTotMp4Frames()
+	totFrames = 300
+	if auto is False:
+		#TODO: make this take inputs for spans of seconds
+		os.system('ffmpeg -ss 00:00:00 -t 00:00:10.00 -i "' + longInputMp4Name + '.MP4" -r 30.0 "' + framesDB + inputMp4Name + '%4d.png"')
+
 #THIS FUNCTION EXTRACTS THE GIF FRAMES, MAKES, AND SAVES MOSAICS OF EACH FRAME AT THE GIVEN SCALE AND DEPTH INTO THE OUTPUTNAMESTR PATH 
 def makeLoopsFromFrames(inputDirectory, scale, littleImgs, outputNameStr):
 	inputFrameNames = os.listdir(inputDirectory)
@@ -287,7 +300,8 @@ def main(argv = None):
 		loadBool = False
 		mapBool = False
 		joinBool = False
-		opts, args = getopt.getopt(sys.argv[1:], 'hcsiapmlj')
+		mp4Bool = False
+		opts, args = getopt.getopt(sys.argv[1:], 'hcsiapmljv')
 		for opt, arg in opts:
 			if opt == '-h':
 				usage()
@@ -309,6 +323,9 @@ def main(argv = None):
 			if opt == '-p':
 				preProcBool = True
 				print 'Making directory of frames by preprocessing instructions file...'
+			if opt == '-v':
+				mp4Bool = True
+				print 'Using mp4 input'
 			if opt == '-l':
 				loadBool = True
 				print 'Making directory of frames by preprocessing instructions file (colorMap file provided)...'
@@ -331,7 +348,6 @@ def main(argv = None):
 			colorMap = {}
 
 			littleImgs = getLittleImgs(littleImgDir)
-
 			makeMosaic(targetImgName, scale, depth, littleImgs, outputName, colorMap, littleImgDir)
 			print outputName + ' saved'
 
@@ -409,7 +425,7 @@ def main(argv = None):
 			if loadBool is True:
 				mapFile = args[3]
 				colorMap = preProc.loadMapFile(mapFile)
-				preProc.readFile(instructionsFile, movDir, outputName, colorMap)
+				preProc.readFile(instructionsFile, movDir, outputName, colorMap, mp4Bool)
 			else:
 				preProc.readFile(instructionsFile, movDir, outputName)
 			print time.time() - startTime, 'seconds'

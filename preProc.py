@@ -10,17 +10,24 @@ import re
 import spectrum
 import pickle
 
+mp4Bool = True
+
 class Sequence:
 	def __init__(self, name):
 		self.name = name
 		self.framePaths = []
 
 class GifInfo:
-	def __init__(self, name):
+	def __init__(self, name, mp4Bool):
 		self.name = name
 		self.framesDir = name + 'frames/'
 		movieMaker.wipeDir(self.framesDir)
-		self.totFrames = remoji.convertGif(name, self.framesDir, auto = True)
+		if mp4Bool == False:
+			self.totFrames = remoji.convertGif(name, self.framesDir, auto = True)
+		else:
+			print 'totFrames getting created here'
+			self.totFrames = remoji.convertMp4(name, self.framesDir, auto = False)
+			
 
 def compressColor(color):
 	newColor = (color[0] / 4 * 4, color[1] / 4 * 4, color[2] / 4 * 4) 
@@ -117,13 +124,24 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 		sRes = int(sRes)
 		eRes = int(eRes)
 		framesPerGif = None
+		print 'gifMap: ', gifMap
 		#print 'gifMap: ', gifMap
 		if gifName in gifMap:
-			framesPerGif = gifMap[gifName].totFrames
+			print 'hi'
+			if mp4Bool == False:
+				framesPerGif = gifMap[gifName].totFrames
+			else:
+				framesPerGif = 300
+			print 'framesPerGif:i',framesPerGif
 		else:
-			gifInfo = GifInfo(gifName)
+			gifInfo = GifInfo(gifName, mp4Bool)
 			gifMap[gifName] = gifInfo
-			framesPerGif = gifInfo.totFrames
+			print 'mp4Bool: ' + str(mp4Bool)
+			if mp4Bool == False:
+				framesPerGif = gifInfo.totFrames
+			else:
+				print 'eyyyyy'
+				framesPerGif = 300
 		approxRes = sRes
 		approxStep = (eRes - sRes) / (float(frames * speed))
 		if specDirOrder != None:
@@ -148,6 +166,7 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 				for s in range(0, int(speed)):
 					curRes = int(round(approxRes))
 					dbFrameStr = movieMaker.getFrameStr(dbFrame, 4)
+					print dbFrameStr
 					frameDesc = (gifName, lilImgDir, j % framesPerGif, curRes)
 					if frameDesc in frameMap:
 						print 'appending ', frameDesc, 'to frameMap'
@@ -250,7 +269,7 @@ def modifySpecAnims(anims, colorMap, whiteSquare, lilImgDBDir = 'emoji/'):
 	return [newAnims, specDirOrder]
 
 
-def readFile(instructionsFile, movDir, outputName, colorMap = {}):
+def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = False):
 	movieMaker.wipeDir('unique/')
 	frameMap = {}
 	specMap = {}	# { (PIVOTCOLORS, LEVELSPERPIVOTCOLOR, LILIMGDIR) : SPECTRUMDIR }
@@ -282,6 +301,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 			if seqType == 'spec':
 				lilImgDir = ''
 				baseDir = lineWords[3]
+				print lineWords
 				loopFrame = int(lineWords[4])
 				whiteSquare = False
 				if baseDir[-1] == 'w':
@@ -402,7 +422,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 				#print 'frameMap[key]: ', frameMap[key]
 				(gifName, lilImgDir, loopFrame, curRes) = key
 				if gifName not in gifMap:
-					gifInfo = GifInfo(gifName)
+					gifInfo = GifInfo(gifName, mp4Bool)
 					print 'new gifInfo class'
 					gifMap[gifName] = gifInfo
 				if lilImgDir not in lilImgMap:
@@ -420,6 +440,13 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 #				print  ['unique/' + inputFrameNames[loopFrame], 'autoScale', depthPix, littleImgs, frameMap[key], 'arbitraryDir/']
 				#print 'lilImgMap:,',lilImgMap
 				#remoji.makeMosaic(gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir, 'arbitraryDir/')
+				#print gifMap[gifName]
+				print inputFrameNames
+				print loopFrame
+				print inputFrameNames[loopFrame]
+				
+				#print lilImgMap[lilImgDir]
+				#print frameMap[key]
 				pool.apply_async(remoji.makeMosaic, [gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir])
 			pool.close()
 			pool.join()
@@ -435,8 +462,3 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}):
 		curLine += 1
 				
 
-
-	
-	
-
-	
