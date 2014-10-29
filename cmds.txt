@@ -1,0 +1,4 @@
+ffmpeg -r 30 -i smov3/anim%04d.png -vb 20000k -c:v libx264 -pix_fmt yuv420p stripes2.mp4
+python remoji.py -v -p smov0/ ins/efaces.txt anim
+python remoji.py -j smov0/ smov0/ smov0/ smov0/ smov0/ smov0/ mov0/
+
