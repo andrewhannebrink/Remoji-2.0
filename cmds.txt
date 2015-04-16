@@ -1,4 +1,6 @@
 ffmpeg -r 30 -i smov3/anim%04d.png -vb 20000k -c:v libx264 -pix_fmt yuv420p stripes2.mp4
 python remoji.py -v -p smov0/ ins/efaces.txt anim
 python remoji.py -j smov0/ smov0/ smov0/ smov0/ smov0/ smov0/ mov0/
+ffmpeg -ss 00:00:10.00 -t 00:00:20.00 -i ssft.MP4 -r 30.0 ssft2.MP4
+ffmpeg -i floaterz2.MP4 -filter:v "setpts=2.0*PTS" floaterz2slow.MP4
 
