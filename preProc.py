@@ -124,14 +124,14 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 		sRes = int(sRes)
 		eRes = int(eRes)
 		framesPerGif = None
-		print 'gifMap: ', gifMap
+		#print 'gifMap: ', gifMap
 		#print 'gifMap: ', gifMap
 		if gifName in gifMap:
 			print 'hi'
 			if mp4Bool == False:
 				framesPerGif = gifMap[gifName].totFrames
 			else:
-				framesPerGif = 300
+				framesPerGif = 1800
 			print 'framesPerGif:i',framesPerGif
 		else:
 			gifInfo = GifInfo(gifName, mp4Bool)
@@ -141,7 +141,7 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 				framesPerGif = gifInfo.totFrames
 			else:
 				print 'eyyyyy'
-				framesPerGif = 300
+				framesPerGif = 1800
 		approxRes = sRes
 		approxStep = (eRes - sRes) / (float(frames * speed))
 		if specDirOrder != None:
@@ -301,7 +301,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = Fals
 			if seqType == 'spec':
 				lilImgDir = ''
 				baseDir = lineWords[3]
-				print lineWords
+				#print lineWords
 				loopFrame = int(lineWords[4])
 				whiteSquare = False
 				if baseDir[-1] == 'w':
@@ -441,9 +441,9 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = Fals
 				#print 'lilImgMap:,',lilImgMap
 				#remoji.makeMosaic(gifMap[gifName].framesDir + inputFrameNames[loopFrame], 'autoScale', depthPix, lilImgMap[lilImgDir], frameMap[key], colorMap, lilImgDir, 'arbitraryDir/')
 				#print gifMap[gifName]
-				print inputFrameNames
-				print loopFrame
-				print inputFrameNames[loopFrame]
+				#print inputFrameNames
+				#print loopFrame
+				#print inputFrameNames[loopFrame]
 				
 				#print lilImgMap[lilImgDir]
 				#print frameMap[key]

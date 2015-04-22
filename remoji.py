@@ -248,10 +248,10 @@ def convertGif(inputGifName, framesDB, auto = False):
 def convertMp4(inputMp4Name, framesDB, auto = False):
 	longInputMp4Name = 'mp4s/' + inputMp4Name
 	#totFrames = movieMaker.getTotMp4Frames(longInputMp4Name) #TODO: write getTotMp4Frames()
-	totFrames = 300
+	totFrames = 1800
 	if auto is False:
 		#TODO: make this take inputs for spans of seconds
-		os.system('ffmpeg -ss 00:00:00 -t 00:00:10.00 -i "' + longInputMp4Name + '.MP4" -r 30.0 "' + framesDB + inputMp4Name + '%4d.png"')
+		os.system('ffmpeg -ss 00:00:00 -t 00:01:00.00 -i "' + longInputMp4Name + '.MP4" -r 30.0 "' + framesDB + inputMp4Name + '%4d.png"')
 
 #THIS FUNCTION EXTRACTS THE GIF FRAMES, MAKES, AND SAVES MOSAICS OF EACH FRAME AT THE GIVEN SCALE AND DEPTH INTO THE OUTPUTNAMESTR PATH 
 def makeLoopsFromFrames(inputDirectory, scale, littleImgs, outputNameStr):
