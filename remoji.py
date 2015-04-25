@@ -243,15 +243,26 @@ def convertGif(inputGifName, framesDB, auto = False):
 			croppedImg.save(framesDB + inputGifName + movieMaker.getFrameStr(i,3) + '.png')
 	return totFrames	
 
+# Given a time in seconds, outputs a str in 'HH:MM:SS.00' format
+def secondsToMinuteStr(seconds):
+	minutes = seconds / 60
+	extraSeconds = seconds % 60
+	minuteStr = movieMaker.getFrameStr(minutes, 2)
+	secondStr = movieMaker.getFrameStr(extraSeconds, 2)
+	outStr = '00:' + minuteStr + ':' + secondStr + '.00'
+	return outStr
+
 #JUST LIKE CONVERT GIFS, BUT FOR MP4'S INSTEAD
 #ffmpeg -ss 00:00:00 -t 00:00:05.00 -i "GOPR0621.MP4" -r 30.0 "stripes%4d.png"
-def convertMp4(inputMp4Name, framesDB, auto = False):
+def convertMp4(inputMp4Name, framesDB, secondsRange = (0, 60), auto = False):
 	longInputMp4Name = 'mp4s/' + inputMp4Name
 	#totFrames = movieMaker.getTotMp4Frames(longInputMp4Name) #TODO: write getTotMp4Frames()
-	totFrames = 1800
+	totFrames = (secondsRange[1] - secondsRange[0]) * 30
+	
 	if auto is False:
-		#TODO: make this take inputs for spans of seconds
-		os.system('ffmpeg -ss 00:00:00 -t 00:01:00.00 -i "' + longInputMp4Name + '.MP4" -r 30.0 "' + framesDB + inputMp4Name + '%4d.png"')
+		startStr = secondsToMinuteStr(secondsRange[0])	
+		endStr = secondsToMinuteStr(secondsRange[1])
+		os.system('ffmpeg -ss ' + startStr + ' -t ' + endStr + ' -i "' + longInputMp4Name + '.MP4" -r 30.0 "' + framesDB + inputMp4Name + '%4d.png"')
 
 #THIS FUNCTION EXTRACTS THE GIF FRAMES, MAKES, AND SAVES MOSAICS OF EACH FRAME AT THE GIVEN SCALE AND DEPTH INTO THE OUTPUTNAMESTR PATH 
 def makeLoopsFromFrames(inputDirectory, scale, littleImgs, outputNameStr):
@@ -371,7 +382,6 @@ def main(argv = None):
 		
 # WHEN THE -A OPTION IS SELECTED, OUTPUT FRAMES IN MOVDIR FOR FINAL ANIMATION
 		if animateBool is True:
-#DO NOT DELETE DIS STUFF EYYYY 
 			movDir = args[0]		#i.e. 'mov/'
 			instructionsFile = args[1]	#i.e. 'instruct.txt'
 			outputName = args[2]		#i.e. 'animation'
@@ -382,27 +392,6 @@ def main(argv = None):
 			movieMaker.framesToMpg(outputName, movDir)
 #			movieMaker.wipeDir('mov/')
 #			trans = movieMaker.boxTrans('mmos/', 'hmos/', 'trans', 'mov/', 17, 0, 1, 1, 4, 15)
-#			trans = movieMaker.boxTrans('hmos/', 'limos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 5, 6)
-#			trans = movieMaker.boxTrans('limos/', 'wmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 6, 7)
-#			trans = movieMaker.boxTrans('wmos/', 'catmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 7, 8)
-#			trans = movieMaker.boxTrans('catmos/', 'cmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 8, 9)
-#			trans = movieMaker.boxTrans('cmos/', 'pmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			trans = movieMaker.boxTrans('pmos/', 'mmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			trans = movieMaker.boxTrans('mmos/', 'hmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 1, 4, 5)
-#			trans = movieMaker.boxTrans('hmos/', 'limos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 5, 6)
-#			trans = movieMaker.boxTrans('limos/', 'wmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 6, 7)
-#			trans = movieMaker.boxTrans('wmos/', 'catmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 7, 8)
-#			trans = movieMaker.boxTrans('catmos/', 'cmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 8, 9)
-#			trans = movieMaker.boxTrans('cmos/', 'pmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			trans = movieMaker.boxTrans('pmos/', 'mmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			trans = movieMaker.boxTrans('mmos/', 'hmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 4, 5)
-#			trans = movieMaker.boxTrans('hmos/', 'limos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 5, 6)
-#			trans = movieMaker.boxTrans('limos/', 'wmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 6, 7)
-#			trans = movieMaker.boxTrans('wmos/', 'catmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 7, 8)
-#			trans = movieMaker.boxTrans('catmos/', 'cmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 8, 9)
-#			trans = movieMaker.boxTrans('cmos/', 'pmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			trans= movieMaker.boxTrans('pmos/', 'mmos/', 'trans', 'mov/', 17, trans.loopFrame, trans.frame, 1, 9, 1)
-#			movieMaker.framesToMpg('trans', 'mov/')
 
 		if mapBool is True:
 			startTime = time.time()
@@ -421,11 +410,15 @@ def main(argv = None):
 			startTime = time.time()
 			movDir = args[0]		#i.e. 'mov/'
 			instructionsFile = args[1]	#i.e. 'instruct.txt'
-			outputName = args[2]		#i.e. 'animation'
+			outputName = 'anim'		#i.e. 'animation'
+			startSec = int(args[2])
+			endSec = int(args[3])
+			secondsRange = (startSec, endSec)
 			if loadBool is True:
 				mapFile = args[3]
 				colorMap = preProc.loadMapFile(mapFile)
-				preProc.readFile(instructionsFile, movDir, outputName, colorMap, mp4Bool)
+#TODO IMPLEMENT MP4BOOL NEW ARGS
+				preProc.readFile(instructionsFile, movDir, outputName, colorMap, mp4Bool, secondsRange)
 			else:
 				preProc.readFile(instructionsFile, movDir, outputName)
 			print time.time() - startTime, 'seconds'

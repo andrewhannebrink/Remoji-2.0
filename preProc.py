@@ -18,7 +18,7 @@ class Sequence:
 		self.framePaths = []
 
 class GifInfo:
-	def __init__(self, name, mp4Bool):
+	def __init__(self, name, mp4Bool, secondsRange):
 		self.name = name
 		self.framesDir = name + 'frames/'
 		movieMaker.wipeDir(self.framesDir)
@@ -26,7 +26,7 @@ class GifInfo:
 			self.totFrames = remoji.convertGif(name, self.framesDir, auto = True)
 		else:
 			print 'totFrames getting created here'
-			self.totFrames = remoji.convertMp4(name, self.framesDir, auto = False)
+			self.totFrames = remoji.convertMp4(name, self.framesDir, secondsRange, auto = False)
 			
 
 def compressColor(color):
@@ -106,7 +106,7 @@ def getNums(line):
 #THIS FUNCTION POPULATES FRAMEMAP GIVEN INSTRUCTIONS FOR A GIVE SEQUENCE SUPPLIED IN THE LIST ANIMS
 #ANIMS IN THE FORMAT: anim = (gifName, lilImgDir, FRAMES, SPEED, SRES, ERES (OPTIONAL))
 #THIS FUNCTION ALSO BUILDS THE GIVEN SEQUENCE'S FRAMEPATHS LIST
-def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, specDirOrder = None):
+def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, specDirOrder = None, secondsRange = (0, 60)):
 #	frame = 1	
 	
 #	loopFrame = 0
@@ -127,21 +127,19 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 		#print 'gifMap: ', gifMap
 		#print 'gifMap: ', gifMap
 		if gifName in gifMap:
-			print 'hi'
 			if mp4Bool == False:
 				framesPerGif = gifMap[gifName].totFrames
 			else:
-				framesPerGif = 1800
+				framesPerGif = (secondsRange[1] - secondsRange[0]) * 30
 			print 'framesPerGif:i',framesPerGif
 		else:
-			gifInfo = GifInfo(gifName, mp4Bool)
+			gifInfo = GifInfo(gifName, mp4Bool, secondsRange)
 			gifMap[gifName] = gifInfo
 			print 'mp4Bool: ' + str(mp4Bool)
 			if mp4Bool == False:
 				framesPerGif = gifInfo.totFrames
 			else:
-				print 'eyyyyy'
-				framesPerGif = 1800
+				framesPerGif = (secondsRange[1] - secondsRange[0]) * 30
 		approxRes = sRes
 		approxStep = (eRes - sRes) / (float(frames * speed))
 		if specDirOrder != None:
@@ -159,7 +157,7 @@ def getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbF
 				approxRes += approxStep
 					
 			# Recursive call to getMosFrames with each anim from newAnims
-			[dbFrame, loopFrame] = getMosFrames(newAnims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame)
+			[dbFrame, loopFrame] = getMosFrames(newAnims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, secondsRange = secondsRange)
 ########
 		else:
 			for i in range(0, int(frames)):
@@ -269,7 +267,7 @@ def modifySpecAnims(anims, colorMap, whiteSquare, lilImgDBDir = 'emoji/'):
 	return [newAnims, specDirOrder]
 
 
-def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = False):
+def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = False, secondsRange = (0, 60)):
 	movieMaker.wipeDir('unique/')
 	frameMap = {}
 	specMap = {}	# { (PIVOTCOLORS, LEVELSPERPIVOTCOLOR, LILIMGDIR) : SPECTRUMDIR }
@@ -355,7 +353,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = Fals
 				#print 'len(anims):',len(anims)
 				#print 'specDirOrder:',specDirOrder
 				#print 'len(specDirOrder):',len(specDirOrder)
-				[dbFrame, loopFrame] = getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, specDirOrder)
+				[dbFrame, loopFrame] = getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, specDirOrder, secondsRange = secondsRange)
 
 
 			#MOSAIC MODE LINE PARSING
@@ -401,7 +399,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = Fals
 					(gifName, lilImgDir) = (seqLineWords[0], seqLineWords[1])
 					#print 'gifName, lilImgDir): ', (gifName, lilImgDir)
 					curSeqLine += 1
-				[dbFrame, loopFrame] = getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame)
+				[dbFrame, loopFrame] = getMosFrames(anims, colorMap, gifMap, frameMap, movDir, outputName, seq, dbFrame, loopFrame, secondsRange = secondsRange)
 			definedSequences[seq.name] = seq
 		if lineWords[0] == 'makeAnim':
 			j = curLine + 1
@@ -422,7 +420,7 @@ def readFile(instructionsFile, movDir, outputName, colorMap = {}, mp4Bool = Fals
 				#print 'frameMap[key]: ', frameMap[key]
 				(gifName, lilImgDir, loopFrame, curRes) = key
 				if gifName not in gifMap:
-					gifInfo = GifInfo(gifName, mp4Bool)
+					gifInfo = GifInfo(gifName, mp4Bool, secondsRange)
 					print 'new gifInfo class'
 					gifMap[gifName] = gifInfo
 				if lilImgDir not in lilImgMap:
